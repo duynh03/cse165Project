@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     glutPassiveMotionFunc(passiveMotion); // Register passive motion callback
     glutDisplayFunc(render);
     glutMainLoop();
-    
+    //aasddadafas
     return 0;
 }
 
