@@ -23,15 +23,15 @@ void passiveMotion(int x, int y) {
 
 void render() {
     glClear(GL_COLOR_BUFFER_BIT);
-    // Render OpenGL scene here
-    
-    // Example: Draw a point at the current mouse position
+    float xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
+    float yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
     glEnable(GL_POINT);
     glColor3f(1.0, 0.0, 0.0); // Red color
-    glPointSize(1.0); // Set point size
+    glPointSize(5.0); // Set point size
     glBegin(GL_POINTS);
-    glVertex2f((mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1, -(mouseY / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1); // Normalize mouse coordinates
-    glVertex2f(.5, .5);
+    glVertex2f(xCoordinate, yCoordinate + 0.2); // Normalize mouse coordinates
+    glVertex2f(xCoordinate - 0.2, yCoordinate);
+    glVertex2f(xCoordinate + 0.2, yCoordinate);
     glEnd();
     
     glutSwapBuffers();
