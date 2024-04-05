@@ -28,10 +28,19 @@ void render() {
     glEnable(GL_POINT);
     glColor3f(1.0, 0.0, 0.0); // Red color
     glPointSize(5.0); // Set point size
-    glBegin(GL_POINTS);
-    glVertex2f(xCoordinate, yCoordinate + 0.2); // Normalize mouse coordinates
-    glVertex2f(xCoordinate - 0.2, yCoordinate);
-    glVertex2f(xCoordinate + 0.2, yCoordinate);
+    // glBegin(GL_POINTS);
+    // glVertex2f(xCoordinate, yCoordinate + 0.2); 
+    // glVertex2f(xCoordinate - 0.2, yCoordinate);
+    // glVertex2f(xCoordinate + 0.2, yCoordinate);
+    // glEnd();
+
+    glBegin(GL_TRIANGLES);
+        glColor3f(1.0, 0.0, 0.0); // Green Color
+        glVertex2f(xCoordinate, yCoordinate + 0.05);
+        glColor3f(1.0, 0.0, 0.0);
+        glVertex2f(xCoordinate - 0.05, yCoordinate - 0.05);
+        glColor3f(1.0, 0.0, 0.0);
+        glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
     glEnd();
     
     glutSwapBuffers();
