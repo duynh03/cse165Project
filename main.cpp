@@ -25,15 +25,8 @@ void render() {
     glClear(GL_COLOR_BUFFER_BIT);
     float xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
     float yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
-    glEnable(GL_POINT);
-    glColor3f(1.0, 0.0, 0.0); // Red color
-    glPointSize(5.0); // Set point size
-    // glBegin(GL_POINTS);
-    // glVertex2f(xCoordinate, yCoordinate + 0.2); 
-    // glVertex2f(xCoordinate - 0.2, yCoordinate);
-    // glVertex2f(xCoordinate + 0.2, yCoordinate);
-    // glEnd();
-
+ 
+    glEnable(GL_TRIANGLES);
     glBegin(GL_TRIANGLES);
         glColor3f(1.0, 0.0, 0.0); // Green Color
         glVertex2f(xCoordinate, yCoordinate + 0.05);
@@ -46,6 +39,17 @@ void render() {
     glutSwapBuffers();
 }
 
+void test(){
+    glClear(GL_COLOR_BUFFER_BIT);
+    glEnable(GL_POINT);
+    glPointSize(5.0); //set size THEN begin, otherwise nothing show on screen
+    glBegin(GL_POINTS);
+    glColor3f(1.0, 0.0, 0.0);
+    glVertex2f(0.5, 0.5);
+    glEnd();
+    glutSwapBuffers();
+}
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitWindowSize(500, 500);
@@ -53,9 +57,9 @@ int main(int argc, char** argv) {
     glutCreateWindow("OpenGL Window");
     
     glutPassiveMotionFunc(passiveMotion); // Register passive motion callback
-    glutDisplayFunc(render);
+    // glutDisplayFunc(render);
+    glutDisplayFunc(test);
     glutMainLoop();
-    //aasddadafas
     return 0;
 }
 
