@@ -1,6 +1,8 @@
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 //g++ -o run main.cpp -lGL -lglut
 //------------------------------------------------------------------------------
@@ -39,13 +41,16 @@ void render() {
     glutSwapBuffers();
 }
 
-void test(){
-    glClear(GL_COLOR_BUFFER_BIT);
+void testpoint(){
+    // glClear(GL_COLOR_BUFFER_BIT);  //if this isnt here, then the dots dont get cleared
     glEnable(GL_POINT);
     glPointSize(5.0); //set size THEN begin, otherwise nothing show on screen
+    float xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
+    float yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
     glBegin(GL_POINTS);
     glColor3f(1.0, 0.0, 0.0);
-    glVertex2f(0.5, 0.5);
+    // glVertex2f(0.5, 0.5);
+    glVertex2d(xCoordinate, yCoordinate);
     glEnd();
     glutSwapBuffers();
 }
@@ -58,7 +63,7 @@ int main(int argc, char** argv) {
     
     glutPassiveMotionFunc(passiveMotion); // Register passive motion callback
     // glutDisplayFunc(render);
-    glutDisplayFunc(test);
+    glutDisplayFunc(testpoint);
     glutMainLoop();
     return 0;
 }
