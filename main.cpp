@@ -36,42 +36,51 @@ void passiveMotion(int x, int y) {
     glutPostRedisplay(); //refresh where the cursor is so it can be redrawn in the window
 }
 
-void triangle() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    float xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
-    float yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
-    float X = randomGen();
-    float Y = randomGen();
+class dotPosition{
+public:
+    float x;
+    float y;
 
-    glEnable(GL_TRIANGLES);
-    glBegin(GL_TRIANGLES);
-        glColor3f(1.0, 0.0, 0.0); // Green Color
-        glVertex2f(xCoordinate, yCoordinate + 0.05);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex2f(xCoordinate - 0.05, yCoordinate - 0.05);
-        glColor3f(1.0, 0.0, 0.0);
-        glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
-    glEnd();
+    void triangle() {
+        glClear(GL_COLOR_BUFFER_BIT);
+        float xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
+        float yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
+        glEnable(GL_TRIANGLES);
+        glBegin(GL_TRIANGLES);
+            glColor3f(1.0, 0.0, 0.0); // Green Color
+            glVertex2f(xCoordinate, yCoordinate + 0.05);
+            glColor3f(1.0, 0.0, 0.0);
+            glVertex2f(xCoordinate - 0.05, yCoordinate - 0.05);
+            glColor3f(1.0, 0.0, 0.0);
+            glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
+        glEnd();
 
-    if (test < 50){
-        glEnable(GL_POINT);
-        glPointSize(20.0);
-        glBegin(GL_POINTS);
-            glColor3f(1.0 ,0.0, 0.0);
-            glVertex2f(X, Y);
-        glEnd();        
+        if (test < 50){
+            glEnable(GL_POINT);
+            glPointSize(20.0);
+            glBegin(GL_POINTS);
+                glColor3f(1.0 ,0.0, 0.0);
+                glVertex2f(x, y);
+            glEnd();        
+        }
+
+
+        glutSwapBuffers();
     }
-
-
-    glutSwapBuffers();
+};
+dotPosition dot;
+void display(){
+    dot.triangle();
 }
+
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitWindowSize(500, 500);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutCreateWindow("OpenGL Window");
     glutPassiveMotionFunc(passiveMotion); // Register passive motion callback
-    glutDisplayFunc(triangle);
+    glutDisplayFunc(display);
     glutMainLoop();
     return 0;
 }
