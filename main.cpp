@@ -20,12 +20,7 @@ void passiveMotion(int x, int y) {
     // Update mouse coordinates
     mouseX = x;
     mouseY = y;
-    if (test >= 500){
-        test = 0;
-    }
-    else{
-        test++;
-    }
+    test++;
 
     // Print mouse coordinates to console
     std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
@@ -40,6 +35,10 @@ class dotPosition{
 public:
     float x;
     float y;
+    dotPosition(){
+        x = randomGen();
+        y = randomGen();
+    }
 
     void triangle() {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -54,8 +53,12 @@ public:
             glColor3f(1.0, 0.0, 0.0);
             glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
         glEnd();
-
-        if (test < 50){
+        if (test >= 200){
+            x = randomGen();
+            y = randomGen();
+            test = 0;
+        }
+        if (test < 150){
             glEnable(GL_POINT);
             glPointSize(20.0);
             glBegin(GL_POINTS);
@@ -68,6 +71,7 @@ public:
         glutSwapBuffers();
     }
 };
+
 dotPosition dot;
 void display(){
     dot.triangle();
