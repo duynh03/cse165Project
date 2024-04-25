@@ -47,12 +47,15 @@ void triangle() {
         glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
     glEnd();
 
-    glEnable(GL_POINT);
-    glPointSize(5.0);
-    glBegin(GL_POINTS);
-        glColor3f(1.0 ,0.0, 0.0);
-        glVertex2f(X, Y);
-    glEnd();
+    if (xCoordinate >= 0 && yCoordinate >= 0){
+        glEnable(GL_POINT);
+        glPointSize(5.0);
+        glBegin(GL_POINTS);
+            glColor3f(1.0 ,0.0, 0.0);
+            glVertex2f(X, Y);
+        glEnd();        
+    }
+
 
     glutSwapBuffers();
 }
