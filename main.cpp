@@ -26,6 +26,7 @@ void passiveMotion(int x, int y) {
     std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
     cout << "Mousex: " << (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1 << endl;
     cout << "MouseY: " << -(mouseY / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1 << endl;
+    cout << "t: " << test << endl;
 
     //Redraw the window
     glutPostRedisplay(); //refresh where the cursor is so it can be redrawn in the window
@@ -53,12 +54,12 @@ public:
             glColor3f(1.0, 0.0, 0.0);
             glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
         glEnd();
-        if (test >= 200){
+        if (test >= 1000){
             x = randomGen();
             y = randomGen();
             test = 0;
         }
-        if (test < 150){
+        if (test < 850){
             glEnable(GL_POINT);
             glPointSize(20.0);
             glBegin(GL_POINTS);
@@ -66,17 +67,50 @@ public:
                 glVertex2f(x, y);
             glEnd();        
         }
+        glutSwapBuffers();
+    }
+};
+class projectile{
+public:
+    float xCoordinate;
+    float yCoordinate;
+    float speed;
+    projectile(){
+        xCoordinate = mouseX;
+        yCoordinate = mouseY;
+        speed = 0.01;
+    }
+    void movingDot(){
+        glClear(GL_COLOR_BUFFER_BIT);
+        glEnable(GL_POINT);
+        glPointSize(10.0);
+        glBegin(GL_POINTS);
+            glColor3f(1.0 ,0.0, 0.0);
+            glVertex2f(xCoordinate, yCoordinate);
+        glEnd();
+        xCoordinate += speed;   
 
+        if (xCoordinate > 1.0f){
+            xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
+            yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
+            
+        }
 
         glutSwapBuffers();
     }
 };
 
 dotPosition dot;
+projectile Projectile;
 void display(){
     dot.triangle();
+    Projectile.movingDot();
 }
 
+void timer(int x){
+    glutPostRedisplay();
+    glutTimerFunc(16, timer, 0);
+}
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -85,6 +119,7 @@ int main(int argc, char** argv) {
     glutCreateWindow("OpenGL Window");
     glutPassiveMotionFunc(passiveMotion); // Register passive motion callback
     glutDisplayFunc(display);
+    glutTimerFunc(0, timer, 0);
     glutMainLoop();
     return 0;
 }
