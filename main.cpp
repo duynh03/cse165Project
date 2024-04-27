@@ -76,11 +76,13 @@ public:
     float yCoordinate;
     float speedX;
     float speedY;
+    int seed;
     projectile(){
         xCoordinate = mouseX;
         yCoordinate = mouseY;
         speedX = 0.05;
         speedY = 0.05;
+        seed = 0;
     }
 
     void movingDot(){
@@ -91,9 +93,16 @@ public:
             glColor3f(1.0 ,0.0, 0.0);
             glVertex2f(xCoordinate, yCoordinate);
         glEnd();
+        if (xCoordinate > yCoordinate){
+            speedX = 0.05;
+        }
+        if (yCoordinate > xCoordinate){
+            speedY= 0.05;
+        }
         xCoordinate += speedX;   
         yCoordinate += speedY;
-        if (xCoordinate > 1.0f || yCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate < -1.0){
+
+        if (seed == 30){  //higher seed = less frequent shot
             xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
             yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
             speedX = xCoordinate * 0.05;
@@ -111,6 +120,12 @@ void display(){
 }
 
 void timer(int x){
+    cout << Projectile.seed << endl;
+    Projectile.seed += 1;
+    if (Projectile.seed == 40){
+        Projectile.seed = 0;
+    }
+
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
 }
