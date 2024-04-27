@@ -1,20 +1,33 @@
 #include <GL/gl.h>
 #include <iostream>
 #include <random>
-using namespace std;
 #include <GL/freeglut.h>
+#include <cmath>
+using namespace std;
+
 //g++ -o run main.cpp -lGL -lglut
 //------------------------------------------------------------------------------
 int mouseX = 0;
 int mouseY = 0;
 int test = 0;
-float randomGen(){
-    random_device rd;
-    mt19937 eng(rd());
-    uniform_real_distribution<> distr(-1.0, 1.0);
-    float random_num = distr(eng);
-    return random_num;   
-}
+class randomNumGen{
+public:
+    float randomCoord(){
+        random_device rd;
+        mt19937 eng(rd());
+        uniform_real_distribution<> distr(-1.0, 1.0);
+        float random_num = distr(eng);
+        return random_num;   
+    }
+    float randomRadius(){
+        random_device rd;
+        mt19937 eng(rd());
+        uniform_real_distribution<> distr(0.0, 360.0);
+        float random_num = distr(eng);
+        return random_num;          
+    }
+};
+
 
 void passiveMotion(int x, int y) {
     // Update mouse coordinates
@@ -32,13 +45,13 @@ void passiveMotion(int x, int y) {
     glutPostRedisplay(); //refresh where the cursor is so it can be redrawn in the window
 }
 
-class dotPosition{
+class dotPosition : public randomNumGen{
 public:
     float x;
     float y;
     dotPosition(){
-        x = randomGen();
-        y = randomGen();
+        x = randomCoord();
+        y = randomCoord();
     }
 
     void triangle() {
@@ -55,8 +68,8 @@ public:
             glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
         glEnd();
         if (test >= 1000){
-            x = randomGen();
-            y = randomGen();
+            x = randomCoord();
+            y = randomCoord();
             test = 0;
         }
         if (test < 850){
@@ -70,14 +83,14 @@ public:
         glutSwapBuffers();
     }
 };
-class projectile{
+class player : public randomNumGen{
 public:
     float xCoordinate;
     float yCoordinate;
     float speedX;
     float speedY;
     int seed;
-    projectile(){
+    player(){
         xCoordinate = mouseX;
         yCoordinate = mouseY;
         speedX = 0.05;
@@ -85,7 +98,7 @@ public:
         seed = 0;
     }
 
-    void movingDot(){
+    void shoot(){
         glClear(GL_COLOR_BUFFER_BIT);
         glEnable(GL_POINT);
         glPointSize(10.0);
@@ -93,39 +106,39 @@ public:
             glColor3f(1.0 ,0.0, 0.0);
             glVertex2f(xCoordinate, yCoordinate);
         glEnd();
-        if (xCoordinate > yCoordinate){
-            speedX = 0.05;
-        }
-        if (yCoordinate > xCoordinate){
-            speedY= 0.05;
-        }
+        // if (xCoordinate > yCoordinate){
+        //     speedX = 0.05;
+        // }
+        // if (yCoordinate > xCoordinate){
+        //     speedY= 0.05;
+        // }
         xCoordinate += speedX;   
         yCoordinate += speedY;
 
-        if (seed == 30){  //higher seed = less frequent shot
+        if (seed == 100){  //higher seed = less frequent shot
             xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
             yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
-            speedX = xCoordinate * 0.05;
-            speedY = yCoordinate * 0.05;
+            speedX = 0.05 * cos(randomRadius());
+            speedY = 0.05 * sin(randomRadius());
+            // speedX = xCoordinate * 0.05;
+            // speedY = yCoordinate * 0.05;
+            cout << "SpeedX: " << speedX << endl;
+            cout << "SpeedY: " << speedY << endl << endl;
+            seed = 0;
         }
         glutSwapBuffers();
     }
 };
 
 dotPosition dot;
-projectile Projectile;
+player Projectile;
 void display(){
     dot.triangle();
-    Projectile.movingDot();
+    Projectile.shoot();
 }
 
 void timer(int x){
-    cout << Projectile.seed << endl;
     Projectile.seed += 1;
-    if (Projectile.seed == 40){
-        Projectile.seed = 0;
-    }
-
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
 }
