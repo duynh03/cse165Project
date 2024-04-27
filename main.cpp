@@ -74,12 +74,15 @@ class projectile{
 public:
     float xCoordinate;
     float yCoordinate;
-    float speed;
+    float speedX;
+    float speedY;
     projectile(){
         xCoordinate = mouseX;
         yCoordinate = mouseY;
-        speed = 0.01;
+        speedX = 0.05;
+        speedY = 0.05;
     }
+
     void movingDot(){
         glClear(GL_COLOR_BUFFER_BIT);
         glEnable(GL_POINT);
@@ -88,14 +91,14 @@ public:
             glColor3f(1.0 ,0.0, 0.0);
             glVertex2f(xCoordinate, yCoordinate);
         glEnd();
-        xCoordinate += speed;   
-
-        if (xCoordinate > 1.0f){
+        xCoordinate += speedX;   
+        yCoordinate += speedY;
+        if (xCoordinate > 1.0f || yCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate < -1.0){
             xCoordinate = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
             yCoordinate = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
-            
+            speedX = xCoordinate * 0.05;
+            speedY = yCoordinate * 0.05;
         }
-
         glutSwapBuffers();
     }
 };
