@@ -38,15 +38,16 @@ void passiveMotion(int x, int y) {
     mouseX = (x / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
     mouseY = -(y / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
 
-    std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
-    cout << "Mousex: " << (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1 << endl;
-    cout << "MouseY: " << -(mouseY / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1 << endl;
+    // std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
+    // cout << "Mousex: " << (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1 << endl;
+    // cout << "MouseY: " << -(mouseY / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1 << endl;
 }
 class gameObject{
 public:
     float xCoordinate, yCoordinate;
     virtual void spawn() = 0;
 };
+
 class player : public randomNumGen, public gameObject{
 private:
     float velocityX, velocityY;
@@ -86,12 +87,12 @@ public:
         xCoordinate += velocityX;   
         yCoordinate += velocityY;
 
-        if (counter == 50){  //higher counter = less frequent shot
+        if (counter >= 50 || xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){  //higher counter = less frequent shot
             xCoordinate = mouseX;
             yCoordinate = mouseY;
             float t = randomDegree();
-            velocityX = 0.05 * cos(t); 
-            velocityY = 0.05 * sin(t);
+            velocityX = 0.1 * cos(t); 
+            velocityY = 0.1 * sin(t);
             counter = 0;
         }
         glutSwapBuffers();
@@ -112,7 +113,10 @@ public:
         glEnable(GL_QUADS);        
     }
     ~squareEnemy(){};
-
+    void randomSpawn(){
+        xCoordinate = randomCustom(-1.0f, 1.0f);
+        yCoordinate = randomCustom(-1.0f, 1.0f); 
+    }
     void spawn() override{
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_QUADS);
@@ -152,29 +156,30 @@ bool collision(gameObject* objA, gameObject* objB){
     if (objA->xCoordinate + 0.1 >= objB->xCoordinate - 0.1 && objB->xCoordinate + 0.1 >= objA->xCoordinate - 0.1){
         x = true;
     }
-    // if (x == true && y == true){
-    //     cout << "collision" << endl;
-    // }  
-    // else{
-    //     cout << "No collision" << endl;
-    // }
-    return false;
+    return x && y;
 }
 
-squareEnemy dot;
+squareEnemy dot1;
 squareEnemy dot2;
 player Player;
 
 void display(){
     dot2.spawn();
-    dot.spawn();
+    dot1.spawn();
     Player.triangle();
     Player.spawn();
-    collision(&dot, &dot2);
+    if (collision(&Player, &dot1) == true){
+        dot1.randomSpawn();
+        Player.counter = 50;
+    }
+    if (collision(&Player, &dot2) == true){
+        dot2.randomSpawn();
+        Player.counter = 50;
+    }
+    
 }
 
 void timer(int x){
-    dot.counter += 1;
     Player.counter += 1;
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
