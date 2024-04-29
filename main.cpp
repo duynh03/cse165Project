@@ -42,16 +42,19 @@ void passiveMotion(int x, int y) {
     cout << "Mousex: " << (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1 << endl;
     cout << "MouseY: " << -(mouseY / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1 << endl;
 }
-
-class player : public randomNumGen{
+class gameObject{
+public:
+    float xCoordinate, yCoordinate;
+    virtual void spawn() = 0;
+};
+class player : public randomNumGen, public gameObject{
 private:
-    float bulletCoordinateX, bulletCoordinateY;
     float velocityX, velocityY;
 public:
     int counter;
     player(){
-        bulletCoordinateX = mouseX;
-        bulletCoordinateY = mouseY;
+        xCoordinate = mouseX;
+        yCoordinate = mouseY;
         velocityX = 0.05;
         velocityY = 0.05;
         counter = 0;
@@ -73,19 +76,19 @@ public:
         glutSwapBuffers();
     }
 
-    void shoot(){
+    void spawn() override{
         glClear(GL_COLOR_BUFFER_BIT);
         glPointSize(10.0);
         glBegin(GL_POINTS);
             glColor3f(1.0 ,0.0, 0.0);
-            glVertex2f(bulletCoordinateX, bulletCoordinateY);
+            glVertex2f(xCoordinate, yCoordinate);
         glEnd();
-        bulletCoordinateX += velocityX;   
-        bulletCoordinateY += velocityY;
+        xCoordinate += velocityX;   
+        yCoordinate += velocityY;
 
         if (counter == 50){  //higher counter = less frequent shot
-            bulletCoordinateX = mouseX;
-            bulletCoordinateY = mouseY;
+            xCoordinate = mouseX;
+            yCoordinate = mouseY;
             float t = randomDegree();
             velocityX = 0.05 * cos(t); 
             velocityY = 0.05 * sin(t);
@@ -94,19 +97,15 @@ public:
         glutSwapBuffers();
     }
 };
-class enemy{
-public:
-    virtual void spawn() = 0;
-};
-class squareEnemy : public enemy, public randomNumGen{
+
+class squareEnemy : public gameObject, public randomNumGen{
 private:
-    float x, y;
     float velocityX, velocityY;
 public:
     int counter;
     squareEnemy(){
-        x = randomCustom(-1.0f, 1.0f);
-        y = randomCustom(-1.0f, 1.0f);
+        xCoordinate = randomCustom(-1.0f, 1.0f);
+        yCoordinate = randomCustom(-1.0f, 1.0f);
         velocityX = 0.03;
         velocityY = 0.03;
         counter = 0;
@@ -118,31 +117,41 @@ public:
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_QUADS);
             glColor3f(0.0, 0.0, 1.0); // Blue Color
-            glVertex2f(x - 0.1, y - 0.1); 
-            glVertex2f(x + 0.1, y - 0.1);
-            glVertex2f(x + 0.1, y + 0.1);
-            glVertex2f(x - 0.1, y + 0.1);
+            glVertex2f(xCoordinate - 0.1, yCoordinate - 0.1); 
+            glVertex2f(xCoordinate + 0.1, yCoordinate - 0.1);
+            glVertex2f(xCoordinate + 0.1, yCoordinate + 0.1);
+            glVertex2f(xCoordinate - 0.1, yCoordinate + 0.1);
         glEnd();
-        x += velocityX;
-        y += velocityY;
-        if (x > 1.0 || x < -1.0 || y > 1.0 || y < -1.0){
+        xCoordinate += velocityX;
+        yCoordinate += velocityY;
+        if (xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){
             counter = 0;
         }
-        if (y > 1.0) {
+        if (yCoordinate > 1.0) {
             velocityY = -1 * velocityY;
         }
-        if (y < -1.0){
+        if (yCoordinate < -1.0){
             velocityY = -1 * velocityY;
         }
-        if (x > 1.0){
+        if (xCoordinate > 1.0){
             velocityX = -1 * velocityX;
         }
-        if (x < -1.0){
+        if (xCoordinate < -1.0){
             velocityX = -1 * velocityX;
         }
         glutSwapBuffers();
     }
 };
+
+bool collision(gameObject* objA, gameObject* objB){
+    if (objA->xCoordinate > 0.5){
+    cout <<"trueA" << endl;
+    }
+    if (objB->xCoordinate > 0.5){
+        cout << "trueB" << endl;
+    }
+    return false;
+}
 
 squareEnemy dot;
 squareEnemy dot2;
@@ -152,7 +161,8 @@ void display(){
     dot2.spawn();
     dot.spawn();
     Player.triangle();
-    Player.shoot();
+    Player.spawn();
+    collision(&dot, &dot2);
 }
 
 void timer(int x){
@@ -164,13 +174,13 @@ void timer(int x){
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitWindowSize(500, 500);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+    glutInitWindowSize(500, 500);
     glutCreateWindow("OpenGL Window");
     glutPassiveMotionFunc(passiveMotion);
     glutDisplayFunc(display);
     glutTimerFunc(0, timer, 0);
+
     glutMainLoop();
     return 0;
 }
-
