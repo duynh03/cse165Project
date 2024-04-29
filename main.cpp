@@ -10,31 +10,14 @@ using namespace std;
 float mouseX = 0.0;
 float mouseY = 0.0;
 bool gameOver = false;
-class randomNumGen{
-public:
-    float randomCoord(){
-        random_device rd;
-        mt19937 eng(rd());
-        uniform_real_distribution<> distr(-1.0, 1.0);
-        float random_num = distr(eng);
-        return random_num;   
-    }
-    float randomDegree(){
-        random_device rd;
-        mt19937 eng(rd());
-        uniform_real_distribution<> distr(0.0, 360.0);
-        float random_degree = distr(eng);
-        return random_degree;          
-    }
-    float randomCustom(float x, float y){
-        random_device rd;
-        mt19937 eng(rd());
-        uniform_real_distribution<> distr(x, y);
-        float random_degree = distr(eng);
-        return random_degree;          
-    }
-};
 
+float randomNumGenerator(float x, float y){
+    random_device rd;
+    mt19937 eng(rd());
+    uniform_real_distribution<> distr(x, y);
+    float random_degree = distr(eng);
+    return random_degree;          
+}
 void passiveMotion(int x, int y) {
     mouseX = (x / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
     mouseY = -(y / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
@@ -51,6 +34,7 @@ public:
         yCoordinate = mouseY;
         glEnable(GL_TRIANGLES);
     }
+    ~player(){}
     void spawn() {
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_TRIANGLES);
@@ -66,7 +50,7 @@ public:
         glutSwapBuffers();
     }
 };
-class bullet : public randomNumGen, public gameObject{
+class bullet : public gameObject{
 private:
     float velocityX, velocityY;
 public:
@@ -92,7 +76,7 @@ public:
         if (counter == 1 || xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){  //higher counter = less frequent shot
             xCoordinate = mouseX;
             yCoordinate = mouseY;
-            float t = randomDegree();
+            float t = randomNumGenerator(0.0, 360.0);
             velocityX = 0.1 * cos(t); 
             velocityY = 0.1 * sin(t);
             counter = 0;
@@ -101,21 +85,20 @@ public:
     }
 };
 
-class squareEnemy : public gameObject, public randomNumGen{
-private:
-    float velocityX, velocityY;
+class squareEnemy : public gameObject{
 public:
+    float velocityX, velocityY;
     squareEnemy(){
-        xCoordinate = randomCustom(-1.0f, 1.0f);
-        yCoordinate = randomCustom(-1.0f, 1.0f);
+        xCoordinate = randomNumGenerator(-1.0f, 1.0f);
+        yCoordinate = randomNumGenerator(-1.0f, 1.0f);
         velocityX = 0.03;
         velocityY = 0.03;
         glEnable(GL_QUADS);        
     }
     ~squareEnemy(){};
     void randomSpawn(){
-        xCoordinate = randomCustom(-1.0f, 1.0f);
-        yCoordinate = randomCustom(-1.0f, 1.0f); 
+        xCoordinate = randomNumGenerator(-1.0f, 1.0f);
+        yCoordinate = randomNumGenerator(-1.0f, 1.0f); 
     }
     void spawn() override{
         glClear(GL_COLOR_BUFFER_BIT);
@@ -173,10 +156,14 @@ void display(){
     if (collision(&Bullet, &dot1) == true){
         dot1.randomSpawn();
         Bullet.counter = 1;
+        dot1.velocityX += 0.01;
+        dot1.velocityY += 0.01;
     }
     if (collision(&Bullet, &dot2) == true){
         dot2.randomSpawn();
         Bullet.counter = 1;
+        dot2.velocityX += 0.01;
+        dot2.velocityY += 0.01;
     }
     
 }
