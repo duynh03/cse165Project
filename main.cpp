@@ -47,36 +47,42 @@ public:
     float xCoordinate, yCoordinate;
     virtual void spawn() = 0;
 };
-
-class player : public randomNumGen, public gameObject{
+class player : public gameObject{
+public:
+    player(){
+        xCoordinate = mouseX;
+        yCoordinate = mouseY;
+        glEnable(GL_TRIANGLES);
+    }
+    void spawn() {
+        glClear(GL_COLOR_BUFFER_BIT);
+        glBegin(GL_TRIANGLES);
+            glColor3f(1.0, 0.0, 0.0); 
+            glVertex2f(xCoordinate, yCoordinate + 0.05);
+            glColor3f(1.0, 0.0, 0.0);
+            glVertex2f(xCoordinate - 0.05, yCoordinate - 0.05);
+            glColor3f(1.0, 0.0, 0.0);
+            glVertex2f(xCoordinate + 0.05, yCoordinate - 0.05);
+        glEnd();
+        xCoordinate = mouseX;
+        yCoordinate = mouseY;
+        glutSwapBuffers();
+    }
+};
+class bullet : public randomNumGen, public gameObject{
 private:
     float velocityX, velocityY;
 public:
     int counter;
-    player(){
+    bullet(){
         xCoordinate = mouseX;
         yCoordinate = mouseY;
         velocityX = 0.05;
         velocityY = 0.05;
         counter = 0;
-        glEnable(GL_TRIANGLES);
         glEnable(GL_POINTS);        
     }
-    ~player(){};
-    void triangle() {
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        glBegin(GL_TRIANGLES);
-            glColor3f(1.0, 0.0, 0.0); 
-            glVertex2f(mouseX, mouseY + 0.05);
-            glColor3f(1.0, 0.0, 0.0);
-            glVertex2f(mouseX - 0.05, mouseY - 0.05);
-            glColor3f(1.0, 0.0, 0.0);
-            glVertex2f(mouseX + 0.05, mouseY - 0.05);
-        glEnd();
-        glutSwapBuffers();
-    }
-
+    ~bullet(){};
     void spawn() override{
         glClear(GL_COLOR_BUFFER_BIT);
         glPointSize(10.0);
@@ -103,13 +109,11 @@ class squareEnemy : public gameObject, public randomNumGen{
 private:
     float velocityX, velocityY;
 public:
-    int counter;
     squareEnemy(){
         xCoordinate = randomCustom(-1.0f, 1.0f);
         yCoordinate = randomCustom(-1.0f, 1.0f);
         velocityX = 0.03;
         velocityY = 0.03;
-        counter = 0;
         glEnable(GL_QUADS);        
     }
     ~squareEnemy(){};
@@ -128,9 +132,8 @@ public:
         glEnd();
         xCoordinate += velocityX;
         yCoordinate += velocityY;
-        if (xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){
-            counter = 0;
-        }
+        // if (xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){
+        // }
         if (yCoordinate > 1.0) {
             velocityY = -1 * velocityY;
         }
@@ -158,29 +161,33 @@ bool collision(gameObject* objA, gameObject* objB){
     }
     return x && y;
 }
-
+//Game objects
 squareEnemy dot1;
 squareEnemy dot2;
+bullet Bullet;
 player Player;
 
 void display(){
     dot2.spawn();
     dot1.spawn();
-    Player.triangle();
     Player.spawn();
-    if (collision(&Player, &dot1) == true){
-        dot1.randomSpawn();
-        Player.counter = 50;
+    Bullet.spawn();
+    if (collision(&Player, &dot1) == true || collision(&Player, &dot2) == true){
+        cout << "You lose" << endl;
     }
-    if (collision(&Player, &dot2) == true){
+    if (collision(&Bullet, &dot1) == true){
+        dot1.randomSpawn();
+        Bullet.counter = 50;
+    }
+    if (collision(&Bullet, &dot2) == true){
         dot2.randomSpawn();
-        Player.counter = 50;
+        Bullet.counter = 50;
     }
     
 }
 
 void timer(int x){
-    Player.counter += 1;
+    Bullet.counter += 1;
     glutPostRedisplay();
     glutTimerFunc(16, timer, 0);
 }
