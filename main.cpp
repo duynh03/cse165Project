@@ -11,6 +11,7 @@ int mouseX = 0;
 int mouseY = 0;
 class randomNumGen{
 public:
+
     float randomCoord(){
         random_device rd;
         mt19937 eng(rd());
@@ -22,6 +23,13 @@ public:
         random_device rd;
         mt19937 eng(rd());
         uniform_real_distribution<> distr(0.0, 360.0);
+        float random_degree = distr(eng);
+        return random_degree;          
+    }
+    float randomCustom(float x, float y){
+        random_device rd;
+        mt19937 eng(rd());
+        uniform_real_distribution<> distr(x, y);
         float random_degree = distr(eng);
         return random_degree;          
     }
@@ -46,8 +54,8 @@ private:
 public:
     int counter;
     Enemy(){
-        x = randomCoord();
-        y = randomCoord();
+        x = randomCustom(-0.05f, 0.05f);
+        y = randomCustom(-0.05f, 0.05f);
         speedX = 0.05;
         speedY = 0.05;
         counter = 0;
@@ -56,7 +64,6 @@ public:
     ~Enemy(){};
     void spawnEnemy(){
         glClear(GL_COLOR_BUFFER_BIT);
-        // glEnable(GL_QUADS);
         glBegin(GL_QUADS);
             glColor3f(0.0, 0.0, 1.0); // Blue Color
             glVertex2f(x - 0.1, y - 0.1); 
@@ -67,10 +74,11 @@ public:
         x += speedX;
         y += speedY;
         if (x > 1.0 || x < -1.0 || y > 1.0 || y < -1.0){
-            x = randomCoord();
-            y = randomCoord();
-            speedX = 0.01 * cos(randomDegree()); 
-            speedY = 0.01 * sin(randomDegree());
+            x = randomCustom(-0.05f, 0.05f);
+            y = randomCustom(-0.05f, 0.05f);
+            float t = randomDegree();
+            speedX = 0.03 * cos(t); 
+            speedY = 0.03 * sin(t);
             counter = 0;
         }
         glutSwapBuffers();
@@ -98,7 +106,6 @@ public:
         glClear(GL_COLOR_BUFFER_BIT);
         mouseCoordinateX = (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
         mouseCoordinateY = -(mouseY /  (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
-        // glEnable(GL_TRIANGLES);
         glBegin(GL_TRIANGLES);
             glColor3f(1.0, 0.0, 0.0); 
             glVertex2f(mouseCoordinateX, mouseCoordinateY + 0.05);
@@ -112,7 +119,6 @@ public:
 
     void shoot(){
         glClear(GL_COLOR_BUFFER_BIT);
-        // glEnable(GL_POINT);
         glPointSize(10.0);
         glBegin(GL_POINTS);
             glColor3f(1.0 ,0.0, 0.0);
@@ -124,8 +130,9 @@ public:
         if (counter == 100){  //higher counter = less frequent shot
             bulletCoordinateX = mouseCoordinateX;
             bulletCoordinateY = mouseCoordinateY;
-            speedX = 0.05 * cos(randomDegree()); 
-            speedY = 0.05 * sin(randomDegree());
+            float t = randomDegree();
+            speedX = 0.05 * cos(t); 
+            speedY = 0.05 * sin(t);
 
             cout << "SpeedX: " << speedX << endl;
             cout << "SpeedY: " << speedY << endl << endl;
