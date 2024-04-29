@@ -117,10 +117,10 @@ public:
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_QUADS);
             glColor3f(0.0, 0.0, 1.0); // Blue Color
-            glVertex2f(xCoordinate - 0.1, yCoordinate - 0.1); 
-            glVertex2f(xCoordinate + 0.1, yCoordinate - 0.1);
-            glVertex2f(xCoordinate + 0.1, yCoordinate + 0.1);
-            glVertex2f(xCoordinate - 0.1, yCoordinate + 0.1);
+            glVertex2f(xCoordinate - 0.1, yCoordinate - 0.1); //bottom left
+            glVertex2f(xCoordinate + 0.1, yCoordinate - 0.1); //bottom right
+            glVertex2f(xCoordinate + 0.1, yCoordinate + 0.1); //top right
+            glVertex2f(xCoordinate - 0.1, yCoordinate + 0.1); //top left
         glEnd();
         xCoordinate += velocityX;
         yCoordinate += velocityY;
@@ -144,12 +144,20 @@ public:
 };
 
 bool collision(gameObject* objA, gameObject* objB){
-    if (objA->xCoordinate > 0.5){
-    cout <<"trueA" << endl;
+    bool x = false;
+    bool y = false;
+    if (objA->yCoordinate - 0.1 <= objB->yCoordinate + 0.1 && objB->yCoordinate - 0.1 <= objA->yCoordinate + 0.1){
+        y = true;
     }
-    if (objB->xCoordinate > 0.5){
-        cout << "trueB" << endl;
+    if (objA->xCoordinate + 0.1 >= objB->xCoordinate - 0.1 && objB->xCoordinate + 0.1 >= objA->xCoordinate - 0.1){
+        x = true;
     }
+    // if (x == true && y == true){
+    //     cout << "collision" << endl;
+    // }  
+    // else{
+    //     cout << "No collision" << endl;
+    // }
     return false;
 }
 
