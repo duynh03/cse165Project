@@ -9,6 +9,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 float mouseX = 0.0;
 float mouseY = 0.0;
+bool gameOver = false;
 class randomNumGen{
 public:
     float randomCoord(){
@@ -37,10 +38,6 @@ public:
 void passiveMotion(int x, int y) {
     mouseX = (x / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1;
     mouseY = -(y / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1;
-
-    // std::cout << "Mouse Position: (" << mouseX << ", " << mouseY << ")" << std::endl;
-    // cout << "Mousex: " << (mouseX / (float)glutGet(GLUT_WINDOW_WIDTH)) * 2 - 1 << endl;
-    // cout << "MouseY: " << -(mouseY / (float)glutGet(GLUT_WINDOW_HEIGHT)) * 2 + 1 << endl;
 }
 class gameObject{
 public:
@@ -73,13 +70,12 @@ class bullet : public randomNumGen, public gameObject{
 private:
     float velocityX, velocityY;
 public:
-    int counter;
+    int counter = 0;
     bullet(){
         xCoordinate = mouseX;
         yCoordinate = mouseY;
         velocityX = 0.05;
         velocityY = 0.05;
-        counter = 0;
         glEnable(GL_POINTS);        
     }
     ~bullet(){};
@@ -93,7 +89,7 @@ public:
         xCoordinate += velocityX;   
         yCoordinate += velocityY;
 
-        if (counter >= 50 || xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){  //higher counter = less frequent shot
+        if (counter == 1 || xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){  //higher counter = less frequent shot
             xCoordinate = mouseX;
             yCoordinate = mouseY;
             float t = randomDegree();
@@ -124,7 +120,7 @@ public:
     void spawn() override{
         glClear(GL_COLOR_BUFFER_BIT);
         glBegin(GL_QUADS);
-            glColor3f(0.0, 0.0, 1.0); // Blue Color
+            glColor3f(0.0, 0.0, 1.0);
             glVertex2f(xCoordinate - 0.1, yCoordinate - 0.1); //bottom left
             glVertex2f(xCoordinate + 0.1, yCoordinate - 0.1); //bottom right
             glVertex2f(xCoordinate + 0.1, yCoordinate + 0.1); //top right
@@ -132,8 +128,6 @@ public:
         glEnd();
         xCoordinate += velocityX;
         yCoordinate += velocityY;
-        // if (xCoordinate > 1.0 || xCoordinate < -1.0 || yCoordinate > 1.0 || yCoordinate < -1.0){
-        // }
         if (yCoordinate > 1.0) {
             velocityY = -1 * velocityY;
         }
@@ -174,22 +168,24 @@ void display(){
     Bullet.spawn();
     if (collision(&Player, &dot1) == true || collision(&Player, &dot2) == true){
         cout << "You lose" << endl;
+        gameOver = true;
     }
     if (collision(&Bullet, &dot1) == true){
         dot1.randomSpawn();
-        Bullet.counter = 50;
+        Bullet.counter = 1;
     }
     if (collision(&Bullet, &dot2) == true){
         dot2.randomSpawn();
-        Bullet.counter = 50;
+        Bullet.counter = 1;
     }
     
 }
 
 void timer(int x){
-    Bullet.counter += 1;
-    glutPostRedisplay();
-    glutTimerFunc(16, timer, 0);
+    if (gameOver == false){
+        glutPostRedisplay();
+        glutTimerFunc(16, timer, 0);
+    }
 }
 
 int main(int argc, char** argv) {
@@ -198,9 +194,11 @@ int main(int argc, char** argv) {
     glutInitWindowSize(500, 500);
     glutCreateWindow("OpenGL Window");
     glutPassiveMotionFunc(passiveMotion);
+    if (gameOver == true){
+        glClearColor(1.0, 1.0, 0.0, 1.0);
+    }
     glutDisplayFunc(display);
     glutTimerFunc(0, timer, 0);
-
     glutMainLoop();
     return 0;
 }
